@@ -23,6 +23,11 @@ class User extends Authenticatable
         'type'
     ];
 
+    public function wallet()
+    {
+        return $this->hasOne(wallet::class);
+    }
+
     protected $hidden = [
         'password',
         'remember_token',
@@ -36,4 +41,5 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
 }
