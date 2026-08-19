@@ -35,4 +35,6 @@ return [
         ],
     ],
 
+    'external_transfer_service_url' => env('EXTERNAL_TRANSFER_SERVICE'),
+
 ];

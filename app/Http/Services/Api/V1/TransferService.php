@@ -8,12 +8,14 @@ use Illuminate\Support\Facades\DB;
 
 class TransferService
 {
-    public function __construct(private Transfer $transfer) {}
+    public function __construct(private Transfer $transfer, private AuthorizationService $authorizationService) {}
 
-    public function store(array $data)
+    public function store(array $data, User $payer, User $payee)
     {
-        $payer = User::findOrFail($data['payer_id']);
-        $payee = User::findOrFail($data['payee_id']);
+
+        if (!$this->authorizationService->authorize()) {
+            throw new \Exception('Transferência não autorizada pelo serviço externo.');
+        }
 
         return DB::transaction(function () use ($data, $payer, $payee) {
 
