@@ -2,6 +2,8 @@
 
 namespace App\Http\Services\Api\V1;
 
+use App\DTOs\V1\Transfer\TransferDTO;
+use App\Events\V1\TransferCompleted;
 use App\Models\Transfer;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -10,18 +12,22 @@ class TransferService
 {
     public function __construct(private Transfer $transfer, private AuthorizationService $authorizationService) {}
 
-    public function store(array $data, User $payer, User $payee)
+    public function store(TransferDTO $dto)
     {
 
         if (!$this->authorizationService->authorize()) {
             throw new \Exception('Transferência não autorizada pelo serviço externo.');
         }
 
-        return DB::transaction(function () use ($data, $payer, $payee) {
+        return DB::transaction(function () use ($dto) {
 
-            $transfer = $this->transfer->create($data);
-            $this->debitTransfer($payer, $data['value']);
-            $this->creditTransfer($payee, $data['value']);
+            $transfer = $this->transfer->create($dto->toArray());
+
+            $this->debitTransfer($dto->payer, $dto->value);
+
+            $this->creditTransfer($dto->payee, $dto->value);
+
+            TransferCompleted::dispatch($transfer);
 
             return $transfer;
         });
