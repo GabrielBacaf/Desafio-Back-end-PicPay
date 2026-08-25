@@ -36,6 +36,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(function (\Throwable $e, Request $request) {
 
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return false; // Deixa o Laravel retornar o 422 original
+            }
+
             if ($request->is('api/*')) {
                 $payload = [
                     'status' => 'error',

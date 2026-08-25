@@ -4,7 +4,7 @@ namespace App\Http\Enums\Api\V1;
 
 enum TypeUsersEnum: string
 {
-    case COMMON = 'comuns ';
+    case COMMON = 'comuns';
     case RETAILERS = 'lojistas';
 
 
